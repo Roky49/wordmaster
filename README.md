@@ -38,6 +38,19 @@
 - localStorage para persistencia
 - 100% estática — sin servidor, sin backend
 
+## 🐳 Docker
+
+```bash
+# Construir y ejecutar
+docker compose up -d
+
+# O manualmente
+docker build -t wordmaster .
+docker run -d -p 8080:80 wordmaster
+```
+
+La app estará en `http://localhost:8080`
+
 ## 📂 Estructura
 
 ```
