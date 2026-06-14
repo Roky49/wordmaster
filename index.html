@@ -48,6 +48,11 @@
       align-items: center;
       padding-bottom: 16px;
     }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
     .logo {
       display: flex;
       align-items: center;
@@ -58,6 +63,20 @@
     }
     .logo span { color: var(--accent); }
     .logo-icon { font-size: 28px; }
+    .language-toggle {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .language-toggle:active { transform: scale(0.95); background: var(--border); }
+    .language-toggle.active { background: rgba(108,99,255,0.15); color: var(--accent-light); border-color: rgba(108,99,255,0.4); }
     .header-actions {
       display: flex;
       gap: 8px;
@@ -79,9 +98,7 @@
     .icon-btn:active { transform: scale(0.92); background: var(--border); }
 
     /* Progress bar */
-    .progress-container {
-      padding: 0 0 20px 0;
-    }
+    .progress-container { padding: 0 0 12px 0; }
     .progress-info {
       display: flex;
       justify-content: space-between;
@@ -107,14 +124,15 @@
     /* Stats row */
     .stats-row {
       display: flex;
-      gap: 12px;
-      padding-bottom: 16px;
+      gap: 8px;
+      padding-bottom: 12px;
+      flex-wrap: wrap;
     }
     .stat-pill {
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 6px 14px;
+      padding: 6px 12px;
       font-size: 13px;
       color: var(--text-secondary);
       display: flex;
@@ -135,10 +153,29 @@
       justify-content: center;
       padding: 8px 0;
     }
+    .card-wrapper {
+      width: 100%;
+      position: relative;
+    }
+    .streak-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(255,217,61,0.15);
+      border: 1px solid rgba(255,217,61,0.4);
+      color: #ffd93d;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      z-index: 10;
+      display: none;
+    }
+    .streak-badge.visible { display: flex; align-items: center; gap: 4px; }
     .card {
       width: 100%;
       aspect-ratio: 3 / 4;
-      max-height: 440px;
+      max-height: 420px;
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: var(--radius);
@@ -149,13 +186,24 @@
       justify-content: center;
       padding: 32px 24px;
       text-align: center;
-      transition: transform 0.3s, box-shadow 0.3s;
+      transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
       position: relative;
       overflow: hidden;
+      will-change: transform;
     }
+    .card.swiping-left { transform: translateX(-120%) rotate(-12deg); transition: transform 0.3s ease; opacity: 0.3; }
+    .card.swiping-right { transform: translateX(120%) rotate(12deg); transition: transform 0.3s ease; opacity: 0.3; }
+    .card.wrong-shake { animation: shake 0.5s ease; border-color: var(--danger); }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
+    }
+    @keyframes pop { 0% { transform: scale(0.95); } 100% { transform: scale(1); } }
+    .card.pop { animation: pop 0.25s ease; }
     .card:active { transform: scale(0.98); }
     .card.flipped {
-      box-shadow: 0 0 40px rgba(108, 99, 255, 0.1);
+      box-shadow: 0 0 40px rgba(108, 99, 255, 0.12);
       border-color: var(--accent);
     }
     .card .tap-hint {
@@ -180,13 +228,10 @@
       color: var(--accent-light);
       opacity: 0;
       transform: translateY(10px);
-      transition: all 0.3s;
+      transition: opacity 0.3s, transform 0.3s, margin 0.3s;
       margin-bottom: 12px;
     }
-    .card.flipped .word-spanish {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    .card.flipped .word-spanish { opacity: 1; transform: translateY(0); }
 
     .word-pronunciation {
       font-size: clamp(16px, 3.5vw, 22px);
@@ -194,12 +239,35 @@
       font-style: italic;
       opacity: 0;
       transform: translateY(10px);
-      transition: all 0.3s 0.1s;
+      transition: opacity 0.3s 0.1s, transform 0.3s 0.1s;
     }
-    .card.flipped .word-pronunciation {
-      opacity: 1;
-      transform: translateY(0);
+    .card.flipped .word-pronunciation { opacity: 1; transform: translateY(0); }
+
+    .card-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.3s, transform 0.3s;
     }
+    .card.flipped .card-actions { opacity: 1; transform: translateY(0); }
+    .sound-btn {
+      background: rgba(108,99,255,0.12);
+      border: 1px solid rgba(108,99,255,0.35);
+      color: var(--accent-light);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 48px;
+    }
+    .sound-btn:active { transform: scale(0.92); background: rgba(108,99,255,0.25); }
+    .sound-btn.loading { opacity: 0.6; pointer-events: none; }
 
     .card-number {
       position: absolute;
@@ -207,18 +275,20 @@
       right: 20px;
       font-size: 13px;
       color: var(--text-secondary);
-      opacity: 0.4;
+      opacity: 0.35;
     }
 
     /* Action buttons */
     .actions {
-      display: flex;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       gap: 12px;
       padding: 20px 0 0 0;
       width: 100%;
     }
+    .btn-full { grid-column: 1 / -1; }
     .btn {
-      flex: 1;
+      width: 100%;
       padding: 16px;
       border: none;
       border-radius: 16px;
@@ -233,10 +303,20 @@
       transition: all 0.2s;
     }
     .btn:active { transform: scale(0.96); }
-    .btn:disabled {
-      opacity: 0.4;
-      pointer-events: none;
+    .btn:disabled { opacity: 0.35; pointer-events: none; filter: grayscale(20%); }
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 16px;
     }
+    .btn-primary:active { opacity: 0.85; transform: scale(0.96); }
+    .btn-outline {
+      background: transparent;
+      color: var(--accent-light);
+      border: 1px solid rgba(108,99,255,0.4);
+    }
+    .btn-outline:active { background: rgba(108,99,255,0.1); }
     .btn-success {
       background: rgba(0, 212, 170, 0.15);
       color: var(--success);
@@ -249,6 +329,12 @@
       border: 1px solid rgba(255, 107, 107, 0.3);
     }
     .btn-danger:active { background: rgba(255, 107, 107, 0.25); }
+    .btn-ghost {
+      background: rgba(255,255,255,0.05);
+      color: var(--text-secondary);
+      border: 1px solid transparent;
+    }
+    .btn-ghost:active { border-color: var(--border); color: var(--card-fg); }
 
     /* Welcome / Done screen */
     .screen {
@@ -258,13 +344,13 @@
       align-items: center;
       justify-content: center;
       text-align: center;
-      gap: 16px;
-      padding: 40px 20px;
+      gap: 14px;
+      padding: 32px 20px;
     }
     .screen.active { display: flex; }
     .screen .emoji { font-size: 64px; margin-bottom: 8px; }
     .screen h2 { font-size: 24px; font-weight: 700; }
-    .screen p { color: var(--text-secondary); line-height: 1.6; font-size: 15px; max-width: 320px; }
+    .screen p { color: var(--text-secondary); line-height: 1.6; font-size: 15px; max-width: 340px; }
     .btn-primary {
       background: var(--accent);
       color: white;
@@ -277,15 +363,15 @@
       cursor: pointer;
       transition: all 0.2s;
     }
-    .btn-primary:active { transform: scale(0.96); opacity: 0.9; }
+    .btn-primary:active { opacity: 0.85; transform: scale(0.96); }
 
     .main-game { display: none; }
     .main-game.active { display: block; }
 
-    /* Stats detail in done screen */
+    /* Done */
     .done-stats {
       display: flex;
-      gap: 20px;
+      gap: 24px;
       margin: 8px 0;
     }
     .done-stat {
@@ -297,9 +383,56 @@
     .done-stat .big { font-size: 36px; font-weight: 800; color: var(--accent-light); }
     .done-stat .big.green { color: var(--success); }
     .done-stat .big.red { color: var(--danger); }
+    .done-stat .big.yellow { color: #ffd93d; }
     .done-stat .label { font-size: 13px; color: var(--text-secondary); }
+    .done-section-title {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 14px;
+      font-weight: 600;
+    }
+    .done-problem-list {
+      max-height: 220px;
+      overflow-y: auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 8px;
+      max-width: var(--max-width);
+    }
+    .chip {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 8px 14px;
+      font-size: 14px;
+      text-align: center;
+    }
+    .chip strong { display: block; color: var(--accent-light); }
+    .chip small { color: var(--text-secondary); font-size: 12px; }
 
-    /* Animation */
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #25253b;
+      color: var(--card-fg);
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-size: 14px;
+      border: 1px solid var(--border);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      pointer-events: none;
+      z-index: 100;
+    }
+    .toast.show { opacity: 1; }
+
+    /* Animations */
     @keyframes fadeInUp {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
@@ -312,7 +445,7 @@
       .btn { padding: 14px; font-size: 14px; }
     }
     @media (min-height: 800px) {
-      .card { max-height: 480px; }
+      .card { max-height: 460px; }
     }
   </style>
 </head>
@@ -320,11 +453,16 @@
 <div class="container" id="app">
   <!-- Header -->
   <div class="header">
-    <div class="logo">
-      <span class="logo-icon">📚</span>
-      Word<span>Master</span>
+    <div class="header-left">
+      <div class="logo">
+        <span class="logo-icon">📚</span>
+        Word<span>Master</span>
+      </div>
+      <button class="language-toggle" id="langToggle" title="Idioma">EN</button>
     </div>
     <div class="header-actions">
+      <button class="icon-btn" id="wrongOnlyBtn" title="Revisar solo falladas">🔄</button>
+      <button class="icon-btn" id="statsBtn" title="Estadísticas">📊</button>
       <button class="icon-btn" id="resetBtn" title="Reiniciar progreso">↺</button>
     </div>
   </div>
@@ -342,29 +480,36 @@
 
   <!-- Stats -->
   <div class="stats-row">
-    <div class="stat-pill">📊 <span class="num" id="statDone">0</span> hechas</div>
+    <div class="stat-pill">📊 <span class="num" id="statDone">0</span></div>
     <div class="stat-pill green">✅ <span class="num" id="statCorrect">0</span></div>
     <div class="stat-pill red">❌ <span class="num" id="statWrong">0</span></div>
-    <div class="stat-pill streak">🔥 <span class="num" id="statStreak">0</span> racha</div>
+    <div class="stat-pill streak">🔥 <span class="num" id="statStreak">0</span></div>
+    <div class="stat-pill">🎯 <span class="num" id="statAccuracy">-</span></div>
   </div>
 
   <!-- Welcome Screen -->
   <div class="screen active" id="welcomeScreen">
     <div class="emoji">👋</div>
     <h2>¡Bienvenido a WordMaster!</h2>
-    <p>Aprende las <strong>3000 palabras más usadas</strong> en inglés con flashcards. Toca la tarjeta para ver la respuesta y marca si la sabías o no.</p>
+    <p>Aprende las <strong>3000 palabras más usadas</strong> en inglés con flashcards. Toca la tarjeta para ver respuesta, escucha la pronunciación y marca si la sabías.</p>
     <button class="btn-primary" id="startBtn">Empezar 🚀</button>
   </div>
 
   <!-- Game Area -->
   <div class="main-game" id="gameArea">
     <div class="card-area">
-      <div class="card" id="card">
-        <div class="tap-hint">👆 Toca para ver la respuesta</div>
-        <div class="word-english" id="wordEnglish">hello</div>
-        <div class="word-spanish" id="wordSpanish">hola</div>
-        <div class="word-pronunciation" id="wordPronunciation">jo-lo</div>
-        <div class="card-number" id="cardNumber">#1</div>
+      <div class="card-wrapper">
+        <div class="streak-badge" id="streakBadge">🔥 <span id="streakBadgeNum">0</span></div>
+        <div class="card" id="card">
+          <div class="tap-hint">👆 Toca para revelar · Desliza para responder</div>
+          <div class="word-english" id="wordEnglish">hello</div>
+          <div class="word-spanish" id="wordSpanish">hola</div>
+          <div class="word-pronunciation" id="wordPronunciation">jo-lo</div>
+          <div class="card-actions">
+            <button class="sound-btn" id="soundBtn" title="Escuchar pronunciación">🔊</button>
+          </div>
+          <div class="card-number" id="cardNumber">#1</div>
+        </div>
       </div>
     </div>
 
@@ -378,7 +523,7 @@
   <div class="screen" id="doneScreen">
     <div class="emoji">🎉</div>
     <h2>¡Completado!</h2>
-    <p>Has repasado todas las palabras de tu sesión.</p>
+    <p>Has repasado todas las palabras de esta sesión.</p>
     <div class="done-stats">
       <div class="done-stat">
         <span class="big green" id="doneCorrect">0</span>
@@ -389,19 +534,51 @@
         <span class="label">Falladas</span>
       </div>
       <div class="done-stat">
+        <span class="big yellow" id="doneMaxStreak">0</span>
+        <span class="label">Mejor racha</span>
+      </div>
+      <div class="done-stat">
         <span class="big" id="doneAccuracy">0%</span>
         <span class="label">Acierto</span>
       </div>
     </div>
-    <button class="btn-primary" id="againBtn">Otra ronda 🔄</button>
+    <div class="done-section-title" id="worstSection" style="display:none">Palabras más falladas</div>
+    <div class="done-stats" id="worstList"></div>
+    <div style="display:flex;gap:10px;width:100%;flex-wrap:wrap;justify-content:center;">
+      <button class="btn-primary" id="againBtn" style="flex:1;min-width:140px;">Otra ronda 🔄</button>
+      <button class="btn btn-outline" id="wrongOnlyBtnDone" style="flex:1;min-width:140px;">Solo falladas 🔁</button>
+    </div>
+  </div>
+
+  <!-- Stats Modal -->
+  <div class="screen" id="statsScreen">
+    <div class="emoji">📊</div>
+    <h2>Estadísticas</h2>
+    <div class="done-stats">
+      <div class="done-stat"><span class="big green" id="statsTotal">0</span><span class="label">Estudiadas</span></div>
+      <div class="done-stat"><span class="big" id="statsRuns">0</span><span class="label">Sesiones</span></div>
+      <div class="done-stat"><span class="big yellow" id="statsBest">0</span><span class="label">Mejor racha</span></div>
+      <div class="done-stat"><span class="big" id="statsAcc">0%</span><span class="label">Acierto global</span></div>
+    </div>
+    <div class="done-section-title">Mejores rachas</div>
+    <div class="done-stats" id="streakHistory" style="flex-wrap:wrap;gap:8px"></div>
+    <p id="emptyStats" style="display:none;color:var(--text-secondary);">Todavía no hay datos.</p>
+    <button class="btn-outline" id="closeStatsBtn" style="margin-top:12px;min-width:140px;">Cerrar</button>
   </div>
 </div>
 
+<div class="toast" id="toast"></div>
+
 <script src="data.js"></script>
 <script>
-  const WORDS = WORD_DATA;
+(function(){
+  'use strict';
+
+  const WORDS = WORD_DATA || [];
 
   // State
+  let uiLang = 'en';
+
   let session = {
     index: 0,
     order: [],
@@ -412,7 +589,12 @@
     done: 0
   };
 
-  // DOM refs
+  let globalStats = { totalStudied: 0, sessions: 0, bestStreak: 0, streakHistory: [] };
+  let lastWordId = -1;
+  let wordIdCounter = 0;
+  let preferredLang = 'en-US';
+
+  // DOM
   const $ = id => document.getElementById(id);
   const card = $('card');
   const wordEnglish = $('wordEnglish');
@@ -426,198 +608,417 @@
   const statCorrect = $('statCorrect');
   const statWrong = $('statWrong');
   const statStreak = $('statStreak');
+  const statAccuracy = $('statAccuracy');
   const welcomeScreen = $('welcomeScreen');
   const gameArea = $('gameArea');
   const doneScreen = $('doneScreen');
+  const statsScreen = $('statsScreen');
   const doneCorrect = $('doneCorrect');
   const doneWrong = $('doneWrong');
   const doneAccuracy = $('doneAccuracy');
+  const doneMaxStreak = $('doneMaxStreak');
+  const worstList = $('worstList');
+  const worstSection = $('worstSection');
+  const streakBadge = $('streakBadge');
+  const streakBadgeNum = $('streakBadgeNum');
+  const toastEl = $('toast');
 
-  // Load saved progress
-  function loadProgress() {
-    try {
-      const saved = localStorage.getItem('wordmaster_session');
-      if (saved) {
-        const s = JSON.parse(saved);
-        // Only restore if there are still words to review
-        if (s.order && s.order.length > 0) {
-          session = s;
-          if (session.index >= session.order.length) {
-            showDone();
-          } else {
-            showGame();
-            showWord();
-          }
-        } else {
-          startSession();
-        }
-      } else {
-        startSession();
-      }
-    } catch(e) {
-      startSession();
-    }
+  // ---------- helpers ----------
+  function screen(name){
+    return { welcome: welcomeScreen, game: gameArea, done: doneScreen, stats: statsScreen }[name];
+  }
+  function show(name){
+    [welcomeScreen, gameArea, doneScreen, statsScreen].forEach(s => s.classList.remove('active'));
+    screen(name).classList.add('active');
   }
 
-  function saveProgress() {
-    try {
-      localStorage.setItem('wordmaster_session', JSON.stringify(session));
-    } catch(e) {}
+  function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
+
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastEl._t);
+    toastEl._t = setTimeout(()=> toastEl.classList.remove('show'), 1600);
   }
 
-  function startSession() {
-    // Create shuffled order of ALL words
-    const indices = WORDS.map((_, i) => i);
-    for (let i = indices.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [indices[i], indices[j]] = [indices[j], indices[i]];
+  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+  function shuffle(arr){
+    for (let i = arr.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
     }
-    session = {
-      index: 0,
-      order: indices,
-      correct: 0,
-      wrong: 0,
-      streak: 0,
-      maxStreak: 0,
-      done: 0
+    return arr;
+  }
+
+  // ---------- TTS ----------
+  function speak(text){
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = preferredLang;
+    u.rate = 0.9;
+    window.speechSynthesis.speak(u);
+  }
+
+  function detectBrowserVoice(){
+    const voices = window.speechSynthesis.getVoices();
+    const en = voices.find(v => v.lang.startsWith('en'));
+    if (en){ preferredLang = en.lang; }
+  }
+
+  function trySpeak(word){
+    if (!('speechSynthesis' in window)) return;
+    const btn = $('soundBtn');
+    btn && btn.classList.add('loading');
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(word);
+    u.lang = preferredLang;
+    u.rate = 0.9;
+    u.onend = () => btn && btn.classList.remove('loading');
+    u.onerror = () => btn && btn.classList.remove('loading');
+    window.speechSynthesis.speak(u);
+  }
+
+  // ---------- storage ----------
+  const STORAGE_KEY = 'wordmaster_v2';
+  function saveState(){
+    const payload = {
+      session,
+      globalStats,
+      lastWordId,
+      wordIdCounter,
+      uiLang,
+      preferredLang,
+      wrongWords: window.__wrongWords || []
     };
-    showGame();
-    showWord();
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(payload)); } catch(e){}
+  }
+  function loadState(){
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const payload = JSON.parse(raw);
+      if (payload.session) session = payload.session;
+      if (payload.globalStats) globalStats = payload.globalStats;
+      if (typeof payload.lastWordId === 'number') lastWordId = payload.lastWordId;
+      if (typeof payload.wordIdCounter === 'number') wordIdCounter = payload.wordIdCounter;
+      if (payload.uiLang) uiLang = payload.uiLang;
+      if (payload.preferredLang) preferredLang = payload.preferredLang;
+      if (Array.isArray(payload.wrongWords)) window.__wrongWords = payload.wrongWords;
+    } catch(e){}
+  }
+  window.__wrongWords = window.__wrongWords || [];
+
+  function recordWrongCurrentWord(){
+    const word = getCurrentWord();
+    if (!word|| word.id === undefined) return;
+    const arr = window.__wrongWords = window.__wrongWords || [];
+    const idx = arr.indexOf(word.id);
+    if (idx === -1) arr.unshift({ id: word.id, misses: 1 });
+    else arr[idx].misses += 1;
   }
 
-  function showWord() {
-    const idx = session.order[session.index];
-    const word = WORDS[idx];
-    wordEnglish.textContent = word.en;
-    wordSpanish.textContent = word.es;
-    wordPronunciation.textContent = word.pr;
+  // ---------- game ----------
+  function nextId(){
+    wordIdCounter++;
+    saveState();
+    return wordIdCounter;
+  }
+
+  function getCurrentWord(){
+    if (!session.order || !session.order.length) return null;
+    const idx = session.order[clamp(session.index, 0, session.order.length - 1)];
+    if (idx === undefined) return null;
+    const base = WORDS[idx];
+    if (!base) return null;
+    return {
+      ...base,
+      _idx: idx,
+      id: base.id ?? nextId()
+    };
+  }
+
+  function startSession(overrides = {}){
+    const size = overrides.pool ?? WORDS.length;
+    const indices = WORDS.map((_, i) => i);
+    const pickCount = Math.min(size, indices.length);
+    const order = [];
+    if (overrides.forcedIndices && overrides.forcedIndices.length){
+      order.push(...shuffle(overrides.forcedIndices.slice()));
+    } else {
+      for (let n = 0; n < pickCount; n++){
+        const i = Math.floor(Math.random()*indices.length);
+        order.push(indices.splice(i,1)[0]);
+      }
+    }
+    session = Object.assign({}, session, { index:0, order, correct:0, wrong:0, streak:0, maxStreak:0, done:0 });
+    show('game');
+    primeWord();
+    saveState();
+  }
+
+  function primeWord(){
+    const w = getCurrentWord();
+    if (!w){ show('done'); return; }
+    lastWordId = w.id;
+    wordEnglish.textContent = uiLang === 'en' ? w.en : w.es;
+    wordSpanish.textContent = uiLang === 'en' ? w.es : w.en;
+    wordPronunciation.textContent = w.pr;
     cardNumber.textContent = `#${session.done + 1}`;
-    card.classList.remove('flipped');
-    updateStats();
-    saveProgress();
+    card.classList.remove('flipped','swiping-left','swiping-right','wrong-shake');
+    updateUI();
+    saveState();
   }
 
-  function flipCard() {
+  function flipCard(){
+    if (card.classList.contains('flipped')) return;
     card.classList.add('flipped');
+    const w = getCurrentWord();
+    if (w) speak(uiLang === 'en' ? w.en : w.es);
+    trackEvent('flip');
   }
 
-  function nextWord(knew) {
-    if (knew) {
+  function advance(knew){
+    if (knew){
       session.correct++;
       session.streak++;
       if (session.streak > session.maxStreak) session.maxStreak = session.streak;
     } else {
       session.wrong++;
       session.streak = 0;
+      recordWrongCurrentWord();
     }
     session.done++;
     session.index++;
-
-    if (session.index >= session.order.length) {
-      showDone();
-    } else {
-      showWord();
-    }
+    if (session.index >= session.order.length){ finishSession(); return; }
+    primeWord();
   }
 
-  function updateStats() {
-    const total = session.done || 0;
-    const maxIdx = session.order.length;
+  function finishSession(){
+    globalStats.totalStudied += session.done;
+    globalStats.sessions += 1;
+    if (session.maxStreak > globalStats.bestStreak) globalStats.bestStreak = session.maxStreak;
+    globalStats.streakHistory = globalStats.streakHistory.filter(s=>s<globalStats.bestStreak);
+    if (session.maxStreak > 0) globalStats.streakHistory.push(session.maxStreak);
+    globalStats.streakHistory = globalStats.streakHistory.slice(-20);
+    updateDoneScreen();
+    show('done');
+    saveState();
+    trackEvent('finish');
+  }
+
+  function updateDoneScreen(){
+    doneCorrect.textContent = session.correct;
+    doneWrong.textContent = session.wrong;
+    doneMaxStreak.textContent = session.maxStreak;
+    const total = session.correct + session.wrong;
+    doneAccuracy.textContent = total > 0 ? `${Math.round((session.correct/total)*100)}%` : '0%';
+    worstList.innerHTML = '';
+    if (window.__wrongWords && window.__wrongWords.length){
+      worstSection.style.display = 'block';
+      const sorted = [...(window.__wrongWords||[])].sort((a,b)=> b.misses - a.misses).slice(0,12);
+      sorted.forEach(x=>{
+        const w = WORDS[x._originalIdx ?? x.id];
+        if (!w) return;
+        const ch = document.createElement('div');
+        ch.className = 'chip';
+        ch.innerHTML = `<strong>${w.en}</strong><small>${w.es}</small>`;
+        worstList.appendChild(ch);
+      });
+    } else worstSection.style.display = 'none';
+  }
+
+  function buildStreakBadge(){
+    if (session.streak >= 4){
+      streakBadge.classList.add('visible');
+      streakBadgeNum.textContent = session.streak;
+    } else streakBadge.classList.remove('visible');
+  }
+
+  function updateUI(){
     progressCount.textContent = session.done;
-    progressTotal.textContent = maxIdx;
-    const pct = maxIdx > 0 ? (session.done / maxIdx) * 100 : 0;
-    progressFill.style.width = Math.min(pct, 100) + '%';
+    progressTotal.textContent = session.order.length || 0;
+    const pct = (session.done / Math.max(session.order.length,1)) * 100;
+    progressFill.style.width = Math.min(Math.max(pct,0),100) + '%';
     statDone.textContent = session.done;
     statCorrect.textContent = session.correct;
     statWrong.textContent = session.wrong;
     statStreak.textContent = session.streak;
-  }
-
-  function showWelcome() {
-    welcomeScreen.classList.add('active');
-    gameArea.classList.remove('active');
-    doneScreen.classList.remove('active');
-  }
-
-  function showGame() {
-    welcomeScreen.classList.remove('active');
-    gameArea.classList.add('active');
-    doneScreen.classList.remove('active');
-  }
-
-  function showDone() {
-    welcomeScreen.classList.remove('active');
-    gameArea.classList.remove('active');
-    doneScreen.classList.add('active');
-    doneCorrect.textContent = session.correct;
-    doneWrong.textContent = session.wrong;
     const total = session.correct + session.wrong;
-    doneAccuracy.textContent = total > 0 ? Math.round((session.correct / total) * 100) + '%' : '0%';
-    updateStats();
-    saveProgress();
+    statAccuracy.textContent = total > 0 ? Math.round((session.correct/total)*100) + '%' : '-';
+    buildStreakBadge();
   }
 
-  // Event Listeners
-  card.addEventListener('click', (e) => {
-    if (!card.classList.contains('flipped')) {
-      flipCard();
+  // Actions
+  function handleKnow(knew){
+    if (!card.classList.contains('flipped')){ flipCard(); setTimeout(()=>advance(knew), 220); return; }
+    advance(knew);
+  }
+  function retryWrongOnly(){
+    const arr = [...(window.__wrongWords||[])].sort((a,b)=> b.misses - a.misses);
+    if (!arr.length){ toast('Sin palabras falladas'); return; }
+    startSession({ forcedIndices: arr.map(x=>x._originalIdx ?? x.id) });
+  }
+  function resetProgress(){
+    if (!confirm('¿Reiniciar todo el progreso y estadísticas?')) return;
+    window.__wrongWords = [];
+    globalStats = { totalStudied: 0, sessions: 0, bestStreak: 0, streakHistory: [] };
+    session = { index:0, order:[], correct:0, wrong:0, streak:0, maxStreak:0, done:0 };
+    show('welcome');
+    saveState();
+    toast('Progreso reiniciado');
+  }
+  function openStats(){
+    $('statsTotal').textContent = globalStats.totalStudied;
+    $('statsRuns').textContent = globalStats.sessions;
+    $('statsBest').textContent = globalStats.bestStreak;
+    const total = globalStats.totalStudied;
+    const correct = (globalStats._correctTotal || 0);
+    $('statsAcc').textContent = total > 0 ? Math.round((correct/total)*100) + '%' : '0%';
+    const histEl = $('streakHistory');
+    histEl.innerHTML = '';
+    if (!globalStats.streakHistory.length){
+      $('emptyStats').style.display = 'block';
+    } else {
+      $('emptyStats').style.display = 'none';
+      globalStats.streakHistory.forEach(s=>{
+        const d = document.createElement('div');
+        d.className = 'chip';
+        d.innerHTML = `<div style="font-weight:700;color:#ffd93d">${s}</div><div style="color:var(--text-secondary);font-size:12px">rachas</div>`;
+        histEl.appendChild(d);
+      });
     }
-  });
+    show('stats');
+  }
 
-  // Keyboard support
-  document.addEventListener('keydown', (e) => {
-    if (gameArea.classList.contains('active')) {
-      if (e.key === ' ' || e.key === 'Enter') {
+  // ---------- gestures ----------
+  let startX = 0, startY = 0, dragging = false, dir = null;
+  function onPointerDown(e){
+    if (!gameArea.classList.contains('active')) return;
+    startX = e.touches ? e.touches[0].clientX : e.clientX;
+    startY = e.touches ? e.touches[0].clientY : e.clientY;
+    dragging = true; dir = null;
+  }
+  function onPointerMove(e){
+    if (!dragging) return;
+    const x = e.touches ? e.touches[0].clientX : e.clientX;
+    const dx = x - startX;
+    if (!dir && Math.abs(dx) > 8){ dir = dx > 0 ? 'r' : 'l'; }
+    if (dir === 'r') card.classList.add('swiping-right');
+    else if (dir === 'l') card.classList.add('swiping-left');
+  }
+  function onPointerUp(e){
+    if (!dragging) return;
+    const x = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
+    const dx = x - startX;
+    dragging = false;
+    const classX = dir === 'r' ? 'swiping-right' : 'swiping-left';
+    setTimeout(()=> card.classList.remove(classX,'swiping-left','swiping-right'), 320);
+    if (Math.abs(dx) > 90){
+      handleKnow(dir === 'r');
+    }
+    dir = null;
+  }
+
+  // ---------- analytics ----------
+  function trackEvent(name, data={}){
+    try {
+      const key = '__wm_events';
+      const arr = JSON.parse(localStorage.getItem(key) || '[]');
+      arr.push({ t: Date.now(), name, session: session.done, ...data });
+      localStorage.setItem(key, JSON.stringify(arr.slice(-200)));
+    } catch(e){}
+  }
+
+  // ---------- init ----------
+  function applyLang(){
+    if (uiLang === 'es'){
+      wordEnglish && (wordEnglish.textContent = wordEnglish._baseEn || wordEnglish.textContent);
+      wordSpanish && (wordSpanish.textContent = wordSpanish._baseEs || wordSpanish.textContent);
+    }
+  }
+
+  function bind(){
+    $('startBtn').addEventListener('click', ()=> startSession());
+    $('againBtn').addEventListener('click', ()=> startSession());
+    $('wrongOnlyBtnDone').addEventListener('click', retryWrongOnly);
+    $('wrongOnlyBtn').addEventListener('click', retryWrongOnly);
+    $('resetBtn').addEventListener('click', resetProgress);
+    $('statsBtn').addEventListener('click', openStats);
+    $('closeStatsBtn').addEventListener('click', ()=> show('game'));
+    card.addEventListener('click', ()=>{ if (!card.classList.contains('flipped')) flipCard(); });
+    $('correctBtn').addEventListener('click', ()=>{
+      if (card.classList.contains('flipped')) handleKnow(true);
+      else flipCard();
+    });
+    $('wrongBtn').addEventListener('click', ()=>{
+      if (card.classList.contains('flipped')){
+        handleKnow(false);
+        card.classList.add('wrong-shake');
+        setTimeout(()=> card.classList.remove('wrong-shake'), 500);
+      } else flipCard();
+    });
+    $('langToggle').addEventListener('click', ()=>{
+      uiLang = uiLang === 'en' ? 'es' : 'en';
+      $('langToggle').textContent = uiLang === 'en' ? 'EN' : 'ES';
+      $('langToggle').classList.toggle('active', uiLang === 'es');
+      const w = getCurrentWord();
+      if (!w) return;
+      wordEnglish.textContent = uiLang === 'en' ? w.en : w.es;
+      wordSpanish.textContent = uiLang === 'en' ? w.es : w.en;
+      saveState();
+    });
+    $('soundBtn').addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const w = getCurrentWord();
+      if (!w) return;
+      trySpeak(uiLang === 'en' ? w.en : w.es);
+    });
+
+    // touch / mouse
+    card.addEventListener('touchstart', onPointerDown, {passive:true});
+    card.addEventListener('touchmove', onPointerMove, {passive:true});
+    card.addEventListener('touchend', onPointerUp);
+    card.addEventListener('mousedown', onPointerDown);
+    window.addEventListener('mousemove', onPointerMove);
+    window.addEventListener('mouseup', onPointerUp);
+
+    document.addEventListener('keydown', (e)=>{
+      if (!gameArea.classList.contains('active')) return;
+      if (e.key === ' ' || e.key === 'Enter'){
         e.preventDefault();
-        if (!card.classList.contains('flipped')) {
-          flipCard();
+        if (!card.classList.contains('flipped')) flipCard();
+      }
+      if (card.classList.contains('flipped')){
+        if (e.key === 'ArrowRight' || e.key === '1'){ e.preventDefault(); handleKnow(true); }
+        else if (e.key === 'ArrowLeft' || e.key === '2'){
+          e.preventDefault();
+          if (!card.classList.contains('flipped')) return;
+          handleKnow(false);
+          card.classList.add('wrong-shake');
+          setTimeout(()=> card.classList.remove('wrong-shake'), 500);
         }
       }
-      if (card.classList.contains('flipped')) {
-        if (e.key === 'ArrowRight' || e.key === '1') {
-          e.preventDefault();
-          nextWord(true);
-        } else if (e.key === 'ArrowLeft' || e.key === '2') {
-          e.preventDefault();
-          nextWord(false);
-        }
-      }
+    });
+
+    if ('speechSynthesis' in window){
+      window.speechSynthesis.onvoiceschanged = detectBrowserVoice;
+      detectBrowserVoice();
     }
-  });
 
-  $('correctBtn').addEventListener('click', () => {
-    if (card.classList.contains('flipped')) {
-      nextWord(true);
-    } else {
-      flipCard();
-    }
-  });
-
-  $('wrongBtn').addEventListener('click', () => {
-    if (card.classList.contains('flipped')) {
-      nextWord(false);
-    } else {
-      flipCard();
-    }
-  });
-
-  $('startBtn').addEventListener('click', startSession);
-  $('againBtn').addEventListener('click', startSession);
-  $('resetBtn').addEventListener('click', () => {
-    if (confirm('¿Reiniciar todo el progreso?')) {
-      localStorage.removeItem('wordmaster_session');
-      showWelcome();
-    }
-  });
-
-  // Init
-  progressTotal.textContent = WORDS.length;
-  loadProgress();
-
-  // Service Worker registration for offline use
-  if ('serviceWorker' in navigator) {
-    // Optional: would need a sw.js file
+    $('langToggle').classList.toggle('active', uiLang === 'es');
   }
+
+  // boot
+  loadState();
+  progressTotal.textContent = WORDS.length;
+  if (session.order && session.order.length){
+    if (session.index >= session.order.length){ updateDoneScreen(); show('done'); saveState(); }
+    else { show('game'); primeWord(); }
+  } else show('welcome');
+  bind();
+})();
 </script>
 </body>
 </html>
